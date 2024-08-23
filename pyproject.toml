@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "qa-citoyen-canadien"
+version = "0.1.0"
+description = ""
+authors = ["Arthur <arten33@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+haystack-ai = "^2.4.0"
+jupyterlab = "^4.2.4"
+jupytext = "^1.16.4"
+python-dotenv = "^1.0.1"
+pypdf = "^4.3.1"
+langfuse = "^2.44.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
