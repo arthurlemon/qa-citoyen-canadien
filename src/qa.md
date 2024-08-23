@@ -25,7 +25,7 @@ from haystack.components.converters import PyPDFToDocument
 from haystack.components.preprocessors import DocumentCleaner, DocumentSplitter
 from haystack.components.writers import DocumentWriter
 from haystack.components.embedders import OpenAIDocumentEmbedder, OpenAITextEmbedder
-from langfuse.decorators import observe
+from langfuse.decorators import observe, langfuse_context
 from dotenv import load_dotenv
 load_dotenv(override=True)
 ```
@@ -136,7 +136,31 @@ inference_pipeline.connect("prompt_builder", "generation")
 ```
 
 ```python
-docs
+@observe(as_type="generation")
+def ask_question_pdf(question: str):
+    langfuse_context.update_current_observation(
+      input=question
+  )
+ 
+    response = inference_pipeline.run(
+        {
+            "embedder": {"text": question},
+            "prompt_builder": {"question": question},
+            "generation": {"generation_kwargs": {"max_tokens": 500}},
+        }
+)
+    langfuse_context.update_current_observation(
+        model= response["generation"]["meta"][0]["model"],
+      usage={
+          "input": response["generation"]["meta"][0]["usage"]["prompt_tokens"],
+          "output": response["generation"]["meta"][0]["usage"]["total_tokens"]
+      }
+  )
+    return response
+```
+
+```python
+response = ask_question_pdf("Quelles sont les différentes sections du document ?")
 ```
 
 ```python
